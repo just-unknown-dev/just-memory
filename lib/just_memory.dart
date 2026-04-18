@@ -1,0 +1,13 @@
+export 'src/arena/memory_arena.dart';
+export 'src/arena/typed_buffer.dart';
+export 'src/cache/budgeted_cache.dart';
+export 'src/cache/cache_budget_stats.dart';
+export 'src/core/memory_stats.dart';
+export 'src/diagnostics/leak_tracker.dart';
+export 'src/diagnostics/memory_profiler.dart';
+export 'src/diagnostics/system_memory_snapshot.dart';
+export 'src/pool/object_pool.dart';
+export 'src/pool/pool_manager.dart';
+export 'src/pool/recyclable.dart';
+export 'src/resource/ref_counted_registry.dart';
+export 'src/scope/memory_scope.dart';
