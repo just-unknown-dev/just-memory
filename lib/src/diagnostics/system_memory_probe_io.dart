@@ -56,6 +56,8 @@ final class _MemoryStatusEx extends Struct {
   external int ullAvailExtendedVirtual;
 }
 
+/// The native probe: Windows through `GlobalMemoryStatusEx`, Linux and
+/// Android through `/proc/meminfo`, macOS and iOS through `sysctlbyname`.
 SystemMemorySnapshot platformProbeSystemMemory() {
   final rssBytes = ProcessInfo.currentRss;
 

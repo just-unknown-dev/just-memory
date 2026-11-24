@@ -90,7 +90,9 @@ Responsibilities:
 
 Important behavior:
 - values must be acquired before they are released
-- releasing a foreign value now throws a `StateError`
+- values are tracked by identity, so value-equality types are safe to pool and mutate
+- releasing a foreign value throws a `StateError`; releasing a free value again is ignored
+- a scoped acquisition is a lease: the scope only releases the value if that lease is still current
 - prewarming can reduce first-use allocation spikes
 
 #### `RoundRobinPool<T>`
@@ -133,6 +135,7 @@ Responsibilities:
 - coalesce concurrent loads for the same key
 - keep a reference count per loaded value
 - call the configured disposer when the final consumer releases the value
+- on `dispose()`, free every loaded value at once and make outstanding handles inert
 
 Typical uses:
 - textures
@@ -152,6 +155,7 @@ Responsibilities:
 - estimate the cost of each entry using caller-defined logic
 - store entries in access order
 - evict least-recently-used items when total cost exceeds the configured budget
+- pass every value that leaves the cache (eviction, replacement, oversize rejection, `clear()`) to `onEvict`, so resources can be freed in one place
 
 The cache is budget-based rather than count-based, so callers can define cost in bytes, complexity units, decoded size, or any other useful metric.
 
@@ -246,10 +250,11 @@ That trade-off keeps the package portable, testable, and easy to integrate acros
 
 Good next steps for the package include:
 
-- broadening edge-case test coverage around cache and arena behavior
-- expanding inline API documentation on public symbols
 - adding more examples for async scope cleanup
 - documenting performance guidance for when to choose pools vs arenas
+- a real free-memory figure on macOS and iOS (today it is total minus the process's resident set)
+
+Every public symbol is documented (`public_member_api_docs` is enabled) and each module has its own test file.
 
 ---
 

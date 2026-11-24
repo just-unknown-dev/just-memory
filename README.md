@@ -1,9 +1,10 @@
-Just Memory
+# Just Memory
 
 High-performance shared memory management for the Just Game Engine ecosystem.
 
 This package is built for performance-first workloads such as games, real-time simulation, reactive systems, and long-running sessions where reducing allocation churn matters.
-For a deeper design overview, see [ARCHITECTURE.md](ARCHITECTURE.md).
+For a deeper design overview, see [ARCHITECTURE.md](ARCHITECTURE.md). A runnable tour of every part is in [example/example.dart](example/example.dart).
+
 ## Features
 
 - Object pooling for high-churn objects
@@ -27,12 +28,12 @@ It does not directly control the Dart VM or force OS-level RAM cleanup. Instead,
 
 ## Installation
 
-For local monorepo usage:
-
 ```yaml
 dependencies:
-  just_memory: ^0.1.0
+  just_memory: ^0.2.0
 ```
+
+It is pure Dart (no Flutter dependency) and runs on every platform, including the web.
 
 Then import it:
 
@@ -92,6 +93,8 @@ await handle.release();
 final cache = BudgetedCache<String, String>(
   maxCost: 100,
   estimateCost: (key, value) => value.length,
+  // Every value that leaves the cache (eviction, replacement, clear())
+  // passes through here.
   onEvict: (key, value) {
     print('Evicted $key');
   },
@@ -178,6 +181,16 @@ Best for:
 
 Use this to inspect tracked pools and caches at runtime and tune your memory budgets.
 
+## Behaviour to know
+
+- **Pools track objects by identity.** Pooling types that override `==` (vectors, value objects) is safe, and they may be mutated while in use. Releasing an object twice is ignored; releasing one the pool never handed out throws a `StateError`.
+- **`acquireScoped` leases are per acquisition.** If you release a scoped object yourself, the scope leaves it alone later, even when the pool has handed it to someone else.
+- **`BudgetedCache.onEvict` sees every value that leaves the cache** except through `remove` (which returns it): budget evictions, replaced values, values too large to fit, and `clear()`. Free cached resources there.
+- **`RefCountedRegistry.dispose()` frees everything now.** Handles still held become inert, and loads still running are freed when their own handles are released.
+- **`MemoryScope.dispose()` does not wait** for callbacks that return futures. Use `disposeAsync()` when cleanup is asynchronous (for example registry handles).
+- **`MemoryArena`'s named accessors need 8 components per slot.** With a shorter layout use `getValue`/`setValue`; debug builds assert on out-of-range slots and offsets, release builds do not check.
+- **`releaseAll`, `PoolManager.clearAll` and the profiler's cleanup helpers act on objects that are still in use.** Call them only at teardown.
+
 ## Performance notes
 
 For best results:
@@ -190,4 +203,4 @@ For best results:
 
 ## Current status
 
-This package is actively being integrated across the Just engine workspace and is intended to be the shared foundation for memory-sensitive systems.
+Just Game Engine uses it for its particle pools, asset scopes and storage caches, and Just Audio Engine for its voice pool. See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.

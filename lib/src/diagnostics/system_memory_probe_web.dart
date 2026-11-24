@@ -19,6 +19,8 @@ extension type _MemoryInfo._(JSObject _) implements JSObject {
   external JSNumber? get jsHeapSizeLimit;
 }
 
+/// The web probe: reads `performance.memory` where the browser exposes it
+/// (Chromium-based browsers).
 SystemMemorySnapshot platformProbeSystemMemory() {
   final memory = _globalThis?.performance?.memory;
   if (memory == null) {

@@ -3,4 +3,5 @@ import 'system_memory_probe_stub.dart'
     if (dart.library.js_interop) 'system_memory_probe_web.dart'
     if (dart.library.io) 'system_memory_probe_io.dart';
 
+/// Reads the host's memory figures with the current platform's probe.
 SystemMemorySnapshot probeSystemMemory() => platformProbeSystemMemory();

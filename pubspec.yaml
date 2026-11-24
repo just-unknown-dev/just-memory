@@ -1,8 +1,15 @@
 name: just_memory
-description: "High-performance shared memory management."
-version: 0.1.0
+description: "Object pools, cleanup scopes, ref-counted resources, cost-bounded LRU caches and flat numeric arenas that cut allocation churn in Dart games and real-time apps."
+version: 0.2.0
 homepage: https://github.com/just-unknown-dev/just-memory
 repository: https://github.com/just-unknown-dev/just-memory
+issue_tracker: https://github.com/just-unknown-dev/just-memory/issues
+topics:
+  - memory
+  - object-pool
+  - cache
+  - performance
+  - gamedev
 
 environment:
   sdk: ^3.11.0
